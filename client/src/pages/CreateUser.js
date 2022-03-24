@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import useAxiosRequest from '../hooks/useAxiosRequest';
 import {
 	TextField,
 	Button,
@@ -15,6 +14,7 @@ import {
 	Snackbar,
 	Stack,
 } from '@mui/material';
+import useAxiosRequest from '../hooks/useAxiosRequest';
 
 export const CreateUser = () => {
 	const mongoDB = useAxiosRequest();
@@ -60,15 +60,15 @@ export const CreateUser = () => {
 
 	const handleSubmit = () => {
 		const keys = Object.keys(userValue);
-		keys.forEach((key) => {
-			if (!userValue[key]) {
-				setError(
-					`All fields are required! Please complete all fields in the form.`
-				);
-				return;
-			}
-		});
-		createNewUser();
+		const checkValue = (element) => userValue[element] === '';
+		const emptyAttribute = keys.some(checkValue);
+		if (emptyAttribute) {
+			setError(
+				`All fields are required! Please complete all fields in the form.`
+			);
+		} else {
+			createNewUser();
+		}
 	};
 
 	const handleReset = () =>

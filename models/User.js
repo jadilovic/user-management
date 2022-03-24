@@ -25,9 +25,11 @@ const UserSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	permission: {
-		type: String,
-	},
+	permissions: [
+		{
+			type: String,
+		},
+	],
 });
 
 const User = new mongoose.model('User', UserSchema);

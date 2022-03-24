@@ -28,7 +28,6 @@ export const EditUser = () => {
 
 	const getUserObject = async (id) => {
 		const user = await mongoDB.getUser(id);
-		console.log('test user : ', user);
 		setUserValue(user);
 		setLoading(false);
 	};
@@ -68,15 +67,15 @@ export const EditUser = () => {
 
 	const handleSubmit = () => {
 		const keys = Object.keys(userValue);
-		keys.forEach((key) => {
-			if (!userValue[key]) {
-				setError(
-					`All fields are required! Please complete all fields in the form.`
-				);
-				return;
-			}
-		});
-		updateUser();
+		const checkValue = (element) => userValue[element] === '';
+		const emptyAttribute = keys.some(checkValue);
+		if (emptyAttribute) {
+			setError(
+				`All fields are required! Please complete all fields in the form.`
+			);
+		} else {
+			updateUser();
+		}
 	};
 
 	if (loading) {

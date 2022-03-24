@@ -1,10 +1,12 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+} from '@mui/material';
 
 export default function ConfirmDialog(props) {
 	const { selectedUser, confirmOpen, setConfirmOpen, deleteUser } = props;
@@ -24,7 +26,7 @@ export default function ConfirmDialog(props) {
 				<DialogTitle>{'Delete User?'}</DialogTitle>
 				<DialogContent>
 					<DialogContentText>
-						{`Are you sure you want to delete this user ${selectedUser.userName}?`}
+						{`Are you sure you want to delete this user?`}
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>

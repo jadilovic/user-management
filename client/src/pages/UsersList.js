@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import useAxiosRequest from '../hooks/useAxiosRequest';
-import LoadingPage from '../components/LoadingPage';
 import { DataGrid } from '@mui/x-data-grid';
 import { Box, Button, Snackbar, Stack, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmDialog from '../components/ConfirmDialog';
+import useAxiosRequest from '../hooks/useAxiosRequest';
+import LoadingPage from '../components/LoadingPage';
 
 const Users = () => {
 	const mongoDB = useAxiosRequest();
@@ -33,13 +33,11 @@ const Users = () => {
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const handleEdit = (event, cellValue) => {
-		console.log('edit');
 		localStorage.setItem('userId', cellValue.row._id);
 		return navigate('/edit_user');
 	};
 
 	const handleAssign = (event, cellValue) => {
-		console.log('permission');
 		localStorage.setItem('userId', cellValue.row._id);
 		return navigate('/assign_permission');
 	};
@@ -81,6 +79,7 @@ const Users = () => {
 
 	const columns = [
 		{ field: '_id', hide: true, flex: 1 },
+		{ field: 'userName', headerName: 'User name', flex: 1 },
 		{ field: 'firstName', headerName: 'First name', flex: 1 },
 		{ field: 'lastName', headerName: 'Last name', flex: 1 },
 		{
@@ -92,13 +91,11 @@ const Users = () => {
 			field: 'status',
 			headerName: 'Status',
 			flex: 1,
-			align: 'center',
 		},
 		{
 			field: 'edit',
 			headerName: 'Edit',
 			flex: 1,
-			align: 'center',
 			renderCell: (cellValues) => {
 				return (
 					<Button
@@ -117,7 +114,6 @@ const Users = () => {
 			field: 'assign',
 			headerName: 'Assign',
 			flex: 1,
-			align: 'center',
 			renderCell: (cellValues) => {
 				return (
 					<Button
@@ -136,7 +132,6 @@ const Users = () => {
 			field: 'Delete',
 			headerName: 'Delete',
 			flex: 1,
-			align: 'center',
 			renderCell: (params) => (
 				<Button
 					variant="outlined"

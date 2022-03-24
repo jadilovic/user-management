@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import useAxiosRequest from '../hooks/useAxiosRequest';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-	TextField,
 	Button,
 	Typography,
 	Container,
 	Grid,
 	Box,
 	Alert,
-	FormControl,
-	InputLabel,
 	Select,
 	MenuItem,
 	Snackbar,
 	Stack,
 	Card,
 	CardContent,
-	Avatar,
-	Divider,
-	CardActions,
+	List,
+	ListItem,
+	ListItemText,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingPage from '../components/LoadingPage';
+import useAxiosRequest from '../hooks/useAxiosRequest';
 
 export const AssignPermission = () => {
 	const mongoDB = useAxiosRequest();
@@ -28,14 +26,23 @@ export const AssignPermission = () => {
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [snackbarSeverity, setSnackbarSeverity] = useState(null);
 	const [userValue, setUserValue] = useState({});
-	const [error, setError] = useState('');
+	const [permissions, setPermissions] = useState([]);
+	const [permissionId, setPermissionId] = useState('');
 	const [loading, setLoading] = useState(true);
+	const [deletePermission, setDeletePermission] = useState(false);
+	const isMounted = useRef(false);
+
+	const getAllPermissions = async () => {
+		const permissions = await mongoDB.getAllPermissions();
+		setPermissions(permissions);
+		setPermissionId(permissions[0]._id);
+		setLoading(false);
+	};
 
 	const getUserObject = async (id) => {
 		const user = await mongoDB.getUser(id);
-		console.log('test user : ', user);
 		setUserValue(user);
-		setLoading(false);
+		getAllPermissions();
 	};
 
 	useEffect(() => {
@@ -51,11 +58,11 @@ export const AssignPermission = () => {
 	};
 
 	const handleChange = (e) => {
-		setError('');
-		setUserValue({ ...userValue, [e.target.name]: e.target.value });
+		setPermissionId(e.target.value);
 	};
 
 	const updateUser = async () => {
+		setLoading(true);
 		const updatedUser = await mongoDB.updateUser(userValue);
 		if (updatedUser) {
 			setSnackbarMsg(`User ${updatedUser.user.userName} was updated!`);
@@ -66,22 +73,38 @@ export const AssignPermission = () => {
 			setSnackbarSeverity('error');
 			setOpenSnackbar(true);
 		}
-		console.log(updatedUser);
-		setLoading(true);
 		getUserObject(updatedUser.user._id);
 	};
 
 	const handleSubmit = () => {
-		// const keys = Object.keys(userValue);
-		// keys.forEach((key) => {
-		// 	if (!userValue[key]) {
-		// 		setError(
-		// 			`All fields are required! Please complete all fields in the form.`
-		// 		);
-		// 		return;
-		// 	}
-		// });
-		updateUser();
+		if (userValue.permissions.indexOf(permissionId) === -1) {
+			userValue.permissions.push(permissionId);
+			setUserValue({ ...userValue, permissions: userValue.permissions });
+			updateUser();
+		}
+	};
+
+	const getCodeAndDescription = (permissionId) => {
+		const permission = permissions.find(
+			(permission) => permission._id === permissionId
+		);
+		return `${permission.code} ${permission.description}`;
+	};
+
+	useEffect(() => {
+		if (isMounted.current) {
+			updateUser();
+		} else {
+			isMounted.current = true;
+		}
+	}, [deletePermission]); // eslint-disable-line react-hooks/exhaustive-deps
+
+	const removePermission = (permissionId) => {
+		const remainingPermissions = userValue.permissions.filter(
+			(permission) => permission !== permissionId
+		);
+		setUserValue({ ...userValue, permissions: remainingPermissions });
+		setDeletePermission(!deletePermission);
 	};
 
 	if (loading) {
@@ -100,15 +123,8 @@ export const AssignPermission = () => {
 								flexDirection: 'column',
 							}}
 						>
-							<Avatar
-								sx={{
-									height: 64,
-									mb: 2,
-									width: 64,
-								}}
-							/>
 							<Typography color="textPrimary" gutterBottom variant="h5">
-								Assign Permission to User
+								Assign Permission to User Page
 							</Typography>
 							<Typography color="textPrimary" gutterBottom variant="h5">
 								{userValue.userName}
@@ -129,36 +145,22 @@ export const AssignPermission = () => {
 					<Typography marginTop={2} component="h1" variant="h5">
 						Select permission:
 					</Typography>
-					<Box sx={{ mt: 3 }}>
-						{error && (
-							<Box
-								sx={{
-									paddingTop: 2,
-									paddingBottom: 2,
-									bgcolor: 'background.paper',
-								}}
-							>
-								<Alert severity="error">{error}</Alert>
-							</Box>
-						)}
+					<Box sx={{ mt: 1 }}>
 						<Grid container spacing={2}>
 							<Grid item xs={12} sm={12}>
 								<Select
 									fullWidth
-									value={
-										userValue.permission
-											? userValue.permission
-											: 'No permission assigned'
-									}
-									label="Permission"
+									value={permissionId}
 									name="permission"
 									onChange={handleChange}
 								>
-									<MenuItem value="No permission assigned">
-										No permission assigned
-									</MenuItem>
-									<MenuItem value="Code">Code</MenuItem>
-									<MenuItem value="Description">Description</MenuItem>
+									{permissions.map((permission) => {
+										return (
+											<MenuItem key={permission._id} value={permission._id}>
+												{`${permission.code} ${permission.description}`}
+											</MenuItem>
+										);
+									})}
 								</Select>
 							</Grid>
 						</Grid>
@@ -168,9 +170,47 @@ export const AssignPermission = () => {
 							variant="contained"
 							sx={{ mt: 3, mb: 2 }}
 						>
-							Save
+							ADD PERMISSION
 						</Button>
 					</Box>
+					<Grid container spacing={2}>
+						<Grid item xs={12} md={6}>
+							<Typography sx={{ mt: 2 }} variant="h6" component="div">
+								{`${
+									userValue.permissions.length > 0
+										? 'List of permissions'
+										: 'No permissions assigned to the user'
+								}`}
+							</Typography>
+							<List>
+								{userValue.permissions.map((permission) => {
+									return (
+										<ListItem
+											key={permission}
+											secondaryAction={
+												<Button
+													variant="contained"
+													color="error"
+													onClick={() => removePermission(permission)}
+													key={permission}
+													edge="end"
+													aria-label="delete"
+												>
+													<DeleteIcon />
+													Remove
+												</Button>
+											}
+										>
+											<ListItemText
+												key={permission}
+												primary={getCodeAndDescription(permission)}
+											/>
+										</ListItem>
+									);
+								})}
+							</List>
+						</Grid>
+					</Grid>
 				</Box>
 				<Stack spacing={2} sx={{ width: '100%' }}>
 					<Snackbar

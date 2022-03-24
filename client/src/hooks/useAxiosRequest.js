@@ -12,13 +12,23 @@ const useAxiosRequest = () => {
 		});
 	};
 
-	// GET USERS AND FILTER REQUEST
+	// GET USERS
 	const getAllUsers = async () => {
 		return axios({
 			method: 'GET',
 			url: `${process.env.REACT_APP_SERVER_URL}/api/v1/users`,
 		}).then((res) => {
 			return res.data.users;
+		});
+	};
+
+	// GET PERMISSIONS
+	const getAllPermissions = async () => {
+		return axios({
+			method: 'GET',
+			url: `${process.env.REACT_APP_SERVER_URL}/api/v1/permissions`,
+		}).then((res) => {
+			return res.data.permissions;
 		});
 	};
 
@@ -31,14 +41,14 @@ const useAxiosRequest = () => {
 	};
 
 	const updateUser = async (editedUser) => {
-		const { _id, firstName, lastName, email, status, permission } = editedUser;
+		const { _id, firstName, lastName, email, status, permissions } = editedUser;
 		return axios
 			.patch(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/${_id}`, {
 				firstName,
 				lastName,
 				email,
 				status,
-				permission,
+				permissions,
 			})
 			.then((res) => {
 				return res.data;
@@ -64,6 +74,7 @@ const useAxiosRequest = () => {
 		getAllUsers,
 		getUser,
 		updateUser,
+		getAllPermissions,
 	};
 };
 
