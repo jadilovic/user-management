@@ -31,13 +31,14 @@ const useAxiosRequest = () => {
 	};
 
 	const updateUser = async (editedUser) => {
-		const { _id, firstName, lastName, email, status } = editedUser;
+		const { _id, firstName, lastName, email, status, permission } = editedUser;
 		return axios
 			.patch(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/${_id}`, {
 				firstName,
 				lastName,
 				email,
 				status,
+				permission,
 			})
 			.then((res) => {
 				return res.data;

@@ -14,10 +14,15 @@ import {
 	MenuItem,
 	Snackbar,
 	Stack,
+	Card,
+	CardContent,
+	Avatar,
+	Divider,
+	CardActions,
 } from '@mui/material';
 import LoadingPage from '../components/LoadingPage';
 
-export const EditUser = () => {
+export const AssignPermission = () => {
 	const mongoDB = useAxiosRequest();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
@@ -67,15 +72,15 @@ export const EditUser = () => {
 	};
 
 	const handleSubmit = () => {
-		const keys = Object.keys(userValue);
-		keys.forEach((key) => {
-			if (!userValue[key]) {
-				setError(
-					`All fields are required! Please complete all fields in the form.`
-				);
-				return;
-			}
-		});
+		// const keys = Object.keys(userValue);
+		// keys.forEach((key) => {
+		// 	if (!userValue[key]) {
+		// 		setError(
+		// 			`All fields are required! Please complete all fields in the form.`
+		// 		);
+		// 		return;
+		// 	}
+		// });
 		updateUser();
 	};
 
@@ -86,16 +91,43 @@ export const EditUser = () => {
 	return (
 		<>
 			<Container component="main" maxWidth="md">
-				<Box
-					sx={{
-						marginTop: 4,
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-					}}
-				>
-					<Typography component="h1" variant="h5">
-						Update user: {userValue.userName}
+				<Card style={{ marginTop: 10 }}>
+					<CardContent>
+						<Box
+							sx={{
+								alignItems: 'center',
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+						>
+							<Avatar
+								sx={{
+									height: 64,
+									mb: 2,
+									width: 64,
+								}}
+							/>
+							<Typography color="textPrimary" gutterBottom variant="h5">
+								Assign Permission to User
+							</Typography>
+							<Typography color="textPrimary" gutterBottom variant="h5">
+								{userValue.userName}
+							</Typography>
+							<Typography color="textSecondary" variant="body2">
+								{`${userValue.firstName} ${userValue.lastName}`}
+							</Typography>
+							<Typography color="textSecondary" variant="body2">
+								{userValue.email}
+							</Typography>
+							<Typography color="textSecondary" variant="body2">
+								{userValue.status}
+							</Typography>
+						</Box>
+					</CardContent>
+				</Card>
+				<Box>
+					<Typography marginTop={2} component="h1" variant="h5">
+						Select permission:
 					</Typography>
 					<Box sx={{ mt: 3 }}>
 						{error && (
@@ -110,54 +142,24 @@ export const EditUser = () => {
 							</Box>
 						)}
 						<Grid container spacing={2}>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									name="firstName"
-									value={userValue.firstName}
-									onChange={handleChange}
-									required
+							<Grid item xs={12} sm={12}>
+								<Select
 									fullWidth
-									id="firstName"
-									label="First name"
-									autoFocus
-								/>
-							</Grid>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									required
-									fullWidth
-									id="lastName"
-									label="Last name"
-									name="lastName"
-									value={userValue.lastName}
+									value={
+										userValue.permission
+											? userValue.permission
+											: 'No permission assigned'
+									}
+									label="Permission"
+									name="permission"
 									onChange={handleChange}
-								/>
-							</Grid>
-							<Grid item xs={12} sm={6}>
-								<TextField
-									required
-									fullWidth
-									id="email"
-									label="Email"
-									name="email"
-									value={userValue.email}
-									onChange={handleChange}
-								/>
-							</Grid>
-							<Grid item xs={12} sm={6}>
-								<FormControl fullWidth>
-									<InputLabel>Status</InputLabel>
-									<Select
-										value={userValue.status}
-										label="Status"
-										name="status"
-										onChange={handleChange}
-									>
-										<MenuItem value="Junior">Junior</MenuItem>
-										<MenuItem value="Medior">Medior</MenuItem>
-										<MenuItem value="Senior">Senior</MenuItem>
-									</Select>
-								</FormControl>
+								>
+									<MenuItem value="No permission assigned">
+										No permission assigned
+									</MenuItem>
+									<MenuItem value="Code">Code</MenuItem>
+									<MenuItem value="Description">Description</MenuItem>
+								</Select>
 							</Grid>
 						</Grid>
 						<Button
@@ -190,4 +192,4 @@ export const EditUser = () => {
 	);
 };
 
-export default EditUser;
+export default AssignPermission;

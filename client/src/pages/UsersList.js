@@ -2,12 +2,19 @@ import React, { useState, useEffect } from 'react';
 import useAxiosRequest from '../hooks/useAxiosRequest';
 import LoadingPage from '../components/LoadingPage';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Snackbar, Stack, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 const Users = () => {
 	const mongoDB = useAxiosRequest();
 	const [users, setUsers] = useState([]);
+	const [confirmOpen, setConfirmOpen] = useState(false);
+	const [selectedUser, setSelectedUser] = useState({});
+	const [openSnackbar, setOpenSnackbar] = useState(false);
+	const [snackbarMsg, setSnackbarMsg] = useState('');
+	const [snackbarSeverity, setSnackbarSeverity] = useState(null);
 	const [loading, setLoading] = useState(true);
 	const navigate = useNavigate();
 
@@ -31,9 +38,46 @@ const Users = () => {
 		return navigate('/edit_user');
 	};
 
-	const handleAssign = () => {};
+	const handleAssign = (event, cellValue) => {
+		console.log('permission');
+		localStorage.setItem('userId', cellValue.row._id);
+		return navigate('/assign_permission');
+	};
 
-	const handleDelete = () => {};
+	const deleteUser = async (userObject) => {
+		setLoading(true);
+		try {
+			const deletedUser = await mongoDB.deleteUser(userObject._id);
+			if (deletedUser) {
+				setSnackbarMsg(`User ${deletedUser.userName} was deleted!`);
+				setSnackbarSeverity('success');
+				setOpenSnackbar(true);
+			} else {
+				setSnackbarMsg(`Failed to delete user ${userObject._id}!`);
+				setSnackbarSeverity('error');
+				setOpenSnackbar(true);
+			}
+		} catch (error) {
+			setSnackbarMsg(
+				`Failed to delete user ${userObject._id}! Error message: ${error.response.data.msg}`
+			);
+			setSnackbarSeverity('error');
+			setOpenSnackbar(true);
+		}
+		displayUsers();
+	};
+
+	const handleDeleteUser = (userObject) => {
+		setSelectedUser(userObject);
+		setConfirmOpen(true);
+	};
+
+	const handleCloseSnackbar = (event, reason) => {
+		if (reason === 'clickaway') {
+			return;
+		}
+		setOpenSnackbar(false);
+	};
 
 	const columns = [
 		{ field: '_id', hide: true, flex: 1 },
@@ -48,11 +92,13 @@ const Users = () => {
 			field: 'status',
 			headerName: 'Status',
 			flex: 1,
+			align: 'center',
 		},
 		{
 			field: 'edit',
 			headerName: 'Edit',
 			flex: 1,
+			align: 'center',
 			renderCell: (cellValues) => {
 				return (
 					<Button
@@ -71,6 +117,7 @@ const Users = () => {
 			field: 'assign',
 			headerName: 'Assign',
 			flex: 1,
+			align: 'center',
 			renderCell: (cellValues) => {
 				return (
 					<Button
@@ -86,22 +133,21 @@ const Users = () => {
 			},
 		},
 		{
-			field: 'delete',
+			field: 'Delete',
 			headerName: 'Delete',
 			flex: 1,
-			renderCell: (cellValues) => {
-				return (
-					<Button
-						variant="contained"
-						color="error"
-						onClick={(event) => {
-							handleDelete(event, cellValues);
-						}}
-					>
-						Delete
-					</Button>
-				);
-			},
+			align: 'center',
+			renderCell: (params) => (
+				<Button
+					variant="outlined"
+					aria-label="delete"
+					color="error"
+					style={{ marginLeft: 16 }}
+					onClick={() => handleDeleteUser(params.row)}
+				>
+					<DeleteIcon />
+				</Button>
+			),
 		},
 	];
 
@@ -126,6 +172,29 @@ const Users = () => {
 						rowsPerPageOptions={[10]}
 					/>
 				</div>
+				<div>
+					<ConfirmDialog
+						deleteUser={deleteUser}
+						selectedUser={selectedUser}
+						setConfirmOpen={setConfirmOpen}
+						confirmOpen={confirmOpen}
+					/>
+				</div>
+				<Stack spacing={2} sx={{ width: '100%' }}>
+					<Snackbar
+						open={openSnackbar}
+						autoHideDuration={5000}
+						onClose={handleCloseSnackbar}
+					>
+						<Alert
+							onClose={handleCloseSnackbar}
+							severity={snackbarSeverity}
+							sx={{ width: '100%' }}
+						>
+							{snackbarMsg}
+						</Alert>
+					</Snackbar>
+				</Stack>
 			</Box>
 		</div>
 	);

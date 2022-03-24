@@ -37,12 +37,12 @@ const getAllUsers = async (req, res) => {
 
 const updateUser = async (req, res) => {
 	const {
-		body: { firstName, lastName, email, status },
+		body: { firstName, lastName, email, status, permission },
 		params: { id: userId },
 	} = req;
 	const user = await User.findByIdAndUpdate(
 		{ _id: userId },
-		{ firstName, lastName, email, status },
+		{ firstName, lastName, email, status, permission },
 		{
 			new: true,
 			runValidators: true,
