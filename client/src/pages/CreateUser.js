@@ -54,7 +54,6 @@ export const CreateUser = () => {
 			setSnackbarSeverity('error');
 			setOpenSnackbar(true);
 		}
-		console.log(newUser);
 		handleReset();
 	};
 

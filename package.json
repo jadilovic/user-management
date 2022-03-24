@@ -5,7 +5,8 @@
 	"main": "server.js",
 	"scripts": {
 		"start": "nodemon server.js",
-		"dev": "concurrently \"cd client && npm start\" \"npm start\" "
+		"dev": "concurrently \"cd client && npm start\" \"npm start\" ",
+		"heroku-postbuild": "npm install --only=dev && npm install && npm run build"
 	},
 	"author": "Jasmin Adilovic",
 	"license": "ISC",
@@ -16,6 +17,7 @@
 		"express": "^4.17.3",
 		"http-status-codes": "^2.2.0",
 		"mongoose": "^6.2.8",
-		"nodemon": "^2.0.15"
+		"nodemon": "^2.0.15",
+		"path": "^0.12.7"
 	}
 }
