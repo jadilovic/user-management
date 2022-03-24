@@ -14,10 +14,10 @@ import {
 	Snackbar,
 	Stack,
 } from '@mui/material';
-import useAxiosRequest from '../hooks/useAxiosRequest';
+import useAxios from '../hooks/useAxios';
 
 export const CreateUser = () => {
-	const mongoDB = useAxiosRequest();
+	const mongoDB = useAxios();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [snackbarSeverity, setSnackbarSeverity] = useState(null);

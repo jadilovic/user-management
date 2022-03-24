@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const useAxiosRequest = () => {
+const useAxios = () => {
 	const createUser = async (userData) => {
 		return axios({
 			method: 'POST',
@@ -78,4 +78,4 @@ const useAxiosRequest = () => {
 	};
 };
 
-export default useAxiosRequest;
+export default useAxios;

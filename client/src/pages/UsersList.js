@@ -4,11 +4,11 @@ import { Box, Button, Snackbar, Stack, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ConfirmDialog from '../components/ConfirmDialog';
-import useAxiosRequest from '../hooks/useAxiosRequest';
+import useAxios from '../hooks/useAxios';
 import LoadingPage from '../components/LoadingPage';
 
 const Users = () => {
-	const mongoDB = useAxiosRequest();
+	const mongoDB = useAxios();
 	const [users, setUsers] = useState([]);
 	const [confirmOpen, setConfirmOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState({});
@@ -141,6 +141,7 @@ const Users = () => {
 					onClick={() => handleDeleteUser(params.row)}
 				>
 					<DeleteIcon />
+					Delete
 				</Button>
 			),
 		},

@@ -18,10 +18,10 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import LoadingPage from '../components/LoadingPage';
-import useAxiosRequest from '../hooks/useAxiosRequest';
+import useAxios from '../hooks/useAxios';
 
 export const AssignPermission = () => {
-	const mongoDB = useAxiosRequest();
+	const mongoDB = useAxios();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [snackbarSeverity, setSnackbarSeverity] = useState(null);

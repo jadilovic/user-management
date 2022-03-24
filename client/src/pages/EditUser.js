@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import useAxiosRequest from '../hooks/useAxiosRequest';
+import useAxios from '../hooks/useAxios';
 import {
 	TextField,
 	Button,
@@ -18,7 +18,7 @@ import {
 import LoadingPage from '../components/LoadingPage';
 
 export const EditUser = () => {
-	const mongoDB = useAxiosRequest();
+	const mongoDB = useAxios();
 	const [openSnackbar, setOpenSnackbar] = useState(false);
 	const [snackbarMsg, setSnackbarMsg] = useState('');
 	const [snackbarSeverity, setSnackbarSeverity] = useState(null);
@@ -50,6 +50,7 @@ export const EditUser = () => {
 	};
 
 	const updateUser = async () => {
+		setLoading(true);
 		const updatedUser = await mongoDB.updateUser(userValue);
 		if (updatedUser) {
 			setSnackbarMsg(`User ${updatedUser.user.userName} was updated!`);
@@ -60,8 +61,6 @@ export const EditUser = () => {
 			setSnackbarSeverity('error');
 			setOpenSnackbar(true);
 		}
-		console.log(updatedUser);
-		setLoading(true);
 		getUserObject(updatedUser.user._id);
 	};
 
