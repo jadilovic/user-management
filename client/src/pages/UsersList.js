@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Box, Chip } from '@mui/material';
 import useAxiosRequest from '../hooks/useAxiosRequest';
 import LoadingPage from '../components/LoadingPage';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
-// import { useHistory } from 'react-router-dom';
-// import useLocalStorageHook from '../utils/useLocalStorageHook';
+import { Box, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const Users = () => {
 	const mongoDB = useAxiosRequest();
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(true);
-	// const history = useHistory();
-	// const data = useLocalStorageHook();
+	const navigate = useNavigate();
 
 	const displayUsers = async () => {
 		try {
@@ -28,10 +25,15 @@ const Users = () => {
 		displayUsers();
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const handleClick = (event, cellValue) => {
-		//	data.saveSelectedUserId(cellValue.row._id);
-		//history.push('/profile');
+	const handleEdit = (event, cellValue) => {
+		console.log('edit');
+		localStorage.setItem('userId', cellValue.row._id);
+		return navigate('/edit_user');
 	};
+
+	const handleAssign = () => {};
+
+	const handleDelete = () => {};
 
 	const columns = [
 		{ field: '_id', hide: true, flex: 1 },
@@ -42,26 +44,14 @@ const Users = () => {
 			headerName: 'Email',
 			flex: 1,
 		},
-		// {
-		// 	field: 'isActive',
-		// 	headerName: 'Active',
-		// 	minWidth: 30,
-		// 	renderCell: (cellValues) => {
-		// 		return (
-		// 			<Chip
-		// 				style={{
-		// 					minWidth: 80,
-		// 				}}
-		// 				label={`${cellValues.row.isActive ? 'Yes' : 'No'}`}
-		// 				color={`${cellValues.row.isActive ? 'success' : 'error'}`}
-		// 				variant="outlined"
-		// 			/>
-		// 		);
-		// 	},
-		// },
+		{
+			field: 'status',
+			headerName: 'Status',
+			flex: 1,
+		},
 		{
 			field: 'edit',
-			headerName: 'Info / Edit',
+			headerName: 'Edit',
 			flex: 1,
 			renderCell: (cellValues) => {
 				return (
@@ -69,10 +59,46 @@ const Users = () => {
 						variant="contained"
 						color="primary"
 						onClick={(event) => {
-							handleClick(event, cellValues);
+							handleEdit(event, cellValues);
 						}}
 					>
-						Info / Edit
+						Edit
+					</Button>
+				);
+			},
+		},
+		{
+			field: 'assign',
+			headerName: 'Assign',
+			flex: 1,
+			renderCell: (cellValues) => {
+				return (
+					<Button
+						variant="contained"
+						color="secondary"
+						onClick={(event) => {
+							handleAssign(event, cellValues);
+						}}
+					>
+						Assign
+					</Button>
+				);
+			},
+		},
+		{
+			field: 'delete',
+			headerName: 'Delete',
+			flex: 1,
+			renderCell: (cellValues) => {
+				return (
+					<Button
+						variant="contained"
+						color="error"
+						onClick={(event) => {
+							handleDelete(event, cellValues);
+						}}
+					>
+						Delete
 					</Button>
 				);
 			},
@@ -91,8 +117,7 @@ const Users = () => {
 					width: '100%',
 				}}
 			>
-				<Typography align="center">List of users</Typography>
-				<div style={{ height: 570, width: '100%' }}>
+				<div style={{ height: 595, width: '100%' }}>
 					<DataGrid
 						getRowId={(row) => row._id}
 						rows={users}

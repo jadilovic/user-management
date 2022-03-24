@@ -26,34 +26,18 @@ const useAxiosRequest = () => {
 		return axios
 			.get(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/${userId}`)
 			.then((res) => {
-				return res.data;
+				return res.data.user;
 			});
 	};
 
 	const updateUser = async (editedUser) => {
-		const {
-			_id,
-			email,
-			firstName,
-			lastName,
-			role,
-			phone,
-			address,
-			city,
-			postNumber,
-			isActive,
-		} = editedUser;
+		const { _id, firstName, lastName, email, status } = editedUser;
 		return axios
 			.patch(`${process.env.REACT_APP_SERVER_URL}/api/v1/users/${_id}`, {
-				email,
 				firstName,
 				lastName,
-				role,
-				phone,
-				address,
-				city,
-				postNumber,
-				isActive,
+				email,
+				status,
 			})
 			.then((res) => {
 				return res.data;
